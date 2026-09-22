@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
+import { draftManager } from '../../lib/draftManager';
 
 interface CertificateUploadSlotProps {
   docType: string;
@@ -445,6 +446,9 @@ export const ApplyFormPage: React.FC = () => {
     const timer = setTimeout(() => {
       try {
         const payload = {
+          schemeId: schemeId || 'sch-nfst-01',
+          schemeName: scheme?.name || 'National Fellowship for Higher Education of ST Students',
+          schemeCode: scheme?.code || 'NFST',
           currentStep,
           maxStepReached,
           completedSteps,
@@ -456,7 +460,7 @@ export const ApplyFormPage: React.FC = () => {
           documents,
           savedAt: new Date().toISOString()
         };
-        localStorage.setItem(draftStorageKey, JSON.stringify(payload));
+        draftManager.saveDraft(draftStorageKey, payload);
         setLastSaved(new Date());
         setDraftRestored(true);
       } catch (err) {
@@ -467,10 +471,10 @@ export const ApplyFormPage: React.FC = () => {
     }, 700);
 
     return () => clearTimeout(timer);
-  }, [personal, address, academic, schemeSpecific, bank, documents, currentStep, maxStepReached, completedSteps, draftStorageKey, submittedAppId]);
+  }, [personal, address, academic, schemeSpecific, bank, documents, currentStep, maxStepReached, completedSteps, draftStorageKey, submittedAppId, schemeId, scheme]);
 
   const handleClearDraft = () => {
-    localStorage.removeItem(draftStorageKey);
+    draftManager.clearDraft(draftStorageKey);
     setDraftRestored(false);
     setLastSaved(null);
     setCompletedSteps([]);
@@ -565,7 +569,7 @@ export const ApplyFormPage: React.FC = () => {
       });
 
       setSubmittedAppId(newApp.id);
-      localStorage.removeItem(draftStorageKey);
+      draftManager.clearDraft(draftStorageKey);
       setDraftRestored(false);
       toast.success(`Application Submitted Successfully! ID: ${newApp.id}`);
     } catch (err) {

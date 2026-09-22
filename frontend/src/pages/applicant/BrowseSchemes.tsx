@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { mockApi } from '../../lib/mockApi';
 import { Scheme } from '../../types';
-import { BookOpen, CheckCircle2, ArrowRight, Filter, Sparkles, HelpCircle } from 'lucide-react';
+import { BookOpen, CheckCircle2, ArrowRight, Filter, Sparkles, HelpCircle, Clock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { SchemeDetailModal } from '../../components/applicant/SchemeDetailModal';
+import { draftManager, ApplicationDraft } from '../../lib/draftManager';
 
 export const BrowseSchemes: React.FC = () => {
   const { user } = useAuth();
@@ -18,6 +20,25 @@ export const BrowseSchemes: React.FC = () => {
   const [userQualifiesNet, setUserQualifiesNet] = useState(true);
   const [userAge, setUserAge] = useState(25);
   const [eligibilityResult, setEligibilityResult] = useState<{eligible: string[], reason: string} | null>(null);
+  
+  // Popout modal & saved drafts state
+  const [selectedSchemeForModal, setSelectedSchemeForModal] = useState<Scheme | null>(null);
+  const [draftMap, setDraftMap] = useState<Record<string, ApplicationDraft>>({});
+
+  const loadDrafts = () => {
+    const all = draftManager.getAllDrafts(user?.id);
+    const map: Record<string, ApplicationDraft> = {};
+    all.forEach((d) => {
+      map[d.schemeId] = d;
+    });
+    setDraftMap(map);
+  };
+
+  useEffect(() => {
+    loadDrafts();
+    window.addEventListener('vidya_draft_updated', loadDrafts);
+    return () => window.removeEventListener('vidya_draft_updated', loadDrafts);
+  }, [user?.id]);
 
   useEffect(() => {
     mockApi.getSchemes().then((data) => {
@@ -189,77 +210,109 @@ export const BrowseSchemes: React.FC = () => {
 
       {/* Schemes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredSchemes.map((scheme) => (
-          <div
-            key={scheme.id}
-            className="bg-white rounded-2xl border border-[#c9b79c] p-6 flex flex-col justify-between shadow-xs hover:shadow-lg transition-all"
-          >
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="bg-[#71816d] text-amber-300 font-extrabold text-xs px-2.5 py-1 rounded-md">
-                  {scheme.code}
-                </span>
-                <span className="text-xs font-semibold text-slate-500">{scheme.category}</span>
-              </div>
+        {filteredSchemes.map((scheme) => {
+          const draft = draftMap[scheme.id];
 
-              <h3 className="text-lg font-bold text-slate-900 mt-4 leading-snug">{scheme.name}</h3>
-
-              <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">{scheme.description}</p>
-
-              <div className="mt-4 space-y-2">
-                <div className="p-3 rounded-xl bg-[#f1e0c5] border border-[#dfcdb1] text-xs space-y-1">
-                  <div className="flex justify-between flex-wrap gap-x-2 gap-y-1 items-start">
-                    <span className="text-slate-500 font-medium shrink-0">Financial Aid:</span>
-                    <span className="font-bold text-slate-900 text-right">{scheme.amount}</span>
-                  </div>
-                  <div className="flex justify-between flex-wrap gap-x-2 gap-y-1 items-start">
-                    <span className="text-slate-500 font-medium shrink-0">Application Window:</span>
-                    <span className="font-bold text-slate-900 text-right">
-                      {new Date(scheme.window.start).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} -{' '}
-                      {new Date(scheme.window.end).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </span>
-                  </div>
+          return (
+            <div
+              key={scheme.id}
+              className={`bg-white rounded-2xl border p-6 flex flex-col justify-between shadow-xs hover:shadow-lg transition-all ${
+                draft && !hasApplied ? 'border-amber-400 ring-1 ring-amber-300' : 'border-[#c9b79c]'
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="bg-[#71816d] text-amber-300 font-extrabold text-xs px-2.5 py-1 rounded-md">
+                    {scheme.code}
+                  </span>
+                  <span className="text-xs font-semibold text-slate-500">{scheme.category}</span>
                 </div>
 
-                <div className="text-[11px] font-medium text-slate-700">
-                  <span className="font-bold text-slate-900">Key Documents Required:</span>
-                  <ul className="list-disc list-inside mt-1 space-y-0.5 text-slate-600">
-                    {scheme.requiredDocs.slice(0, 3).map((doc, idx) => (
-                      <li key={idx}>{doc}</li>
-                    ))}
-                  </ul>
+                <h3 className="text-lg font-bold text-slate-900 mt-4 leading-snug">{scheme.name}</h3>
+
+                {draft && !hasApplied && (
+                  <div className="mt-2.5 inline-flex items-center px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-[11px] font-bold">
+                    <Clock className="w-3.5 h-3.5 mr-1.5 text-amber-700 animate-pulse shrink-0" />
+                    <span>Draft in progress: Step {draft.currentStep} of 7</span>
+                  </div>
+                )}
+
+                <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">{scheme.description}</p>
+
+                <div className="mt-4 space-y-2">
+                  <div className="p-3 rounded-xl bg-[#f1e0c5] border border-[#dfcdb1] text-xs space-y-1">
+                    <div className="flex justify-between flex-wrap gap-x-2 gap-y-1 items-start">
+                      <span className="text-slate-500 font-medium shrink-0">Financial Aid:</span>
+                      <span className="font-bold text-slate-900 text-right">{scheme.amount}</span>
+                    </div>
+                    <div className="flex justify-between flex-wrap gap-x-2 gap-y-1 items-start">
+                      <span className="text-slate-500 font-medium shrink-0">Application Window:</span>
+                      <span className="font-bold text-slate-900 text-right">
+                        {new Date(scheme.window.start).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} -{' '}
+                        {new Date(scheme.window.end).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] font-medium text-slate-700">
+                    <span className="font-bold text-slate-900">Key Documents Required:</span>
+                    <ul className="list-disc list-inside mt-1 space-y-0.5 text-slate-600">
+                      {scheme.requiredDocs.slice(0, 3).map((doc, idx) => (
+                        <li key={idx}>{doc}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-6 pt-4 border-t border-[#dfcdb1] flex items-center justify-between">
-              <Link
-                to={`/app/schemes/${scheme.id}`}
-                className="text-xs font-bold text-[#71816d] hover:underline"
-              >
-                View Details
-              </Link>
-              {hasApplied ? (
+              <div className="mt-6 pt-4 border-t border-[#dfcdb1] flex items-center justify-between gap-2">
                 <button
-                  disabled
-                  className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-200 text-slate-500 font-bold text-xs cursor-not-allowed shadow-xs"
-                  title="You have already applied for a scheme"
+                  type="button"
+                  onClick={() => setSelectedSchemeForModal(scheme)}
+                  className="text-xs font-bold text-[#71816d] hover:text-[#5a6857] hover:underline cursor-pointer"
                 >
-                  <span>Already Applied</span>
+                  View Details
                 </button>
-              ) : (
-                <Link
-                  to={`/app/apply/${scheme.id}`}
-                  className="inline-flex items-center px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-xs transition-colors"
-                >
-                  <span>Apply Now</span>
-                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
-                </Link>
-              )}
+                {hasApplied ? (
+                  <button
+                    disabled
+                    className="inline-flex items-center px-4 py-2 rounded-xl bg-slate-200 text-slate-500 font-bold text-xs cursor-not-allowed shadow-xs"
+                    title="You have already applied for a scheme"
+                  >
+                    <span>Already Applied</span>
+                  </button>
+                ) : draft ? (
+                  <Link
+                    to={`/app/apply/${scheme.id}`}
+                    className="inline-flex items-center px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-colors"
+                  >
+                    <Clock className="w-3.5 h-3.5 mr-1.5 animate-pulse" />
+                    <span>Continue where left off</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                  </Link>
+                ) : (
+                  <Link
+                    to={`/app/apply/${scheme.id}`}
+                    className="inline-flex items-center px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-xs transition-colors"
+                  >
+                    <span>Apply Now</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                  </Link>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {/* Popout Scheme Details Modal */}
+      <SchemeDetailModal
+        scheme={selectedSchemeForModal}
+        isOpen={!!selectedSchemeForModal}
+        onClose={() => setSelectedSchemeForModal(null)}
+        draft={selectedSchemeForModal ? draftMap[selectedSchemeForModal.id] : null}
+        hasApplied={hasApplied}
+      />
     </div>
   );
 };

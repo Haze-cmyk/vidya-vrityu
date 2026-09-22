@@ -17,15 +17,29 @@ import {
   Bell,
   Upload
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { draftManager, ApplicationDraft, STEP_NAMES } from '../../lib/draftManager';
 
 export const ApplicantDashboard: React.FC = () => {
   const { user } = useAuth();
   const [applications, setApplications] = useState<Application[]>([]);
+  const [drafts, setDrafts] = useState<ApplicationDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadMyApplications();
+  }, [user?.id]);
+
+  const loadDrafts = () => {
+    const all = draftManager.getAllDrafts(user?.id);
+    setDrafts(all);
+  };
+
+  useEffect(() => {
+    loadDrafts();
+    window.addEventListener('vidya_draft_updated', loadDrafts);
+    return () => window.removeEventListener('vidya_draft_updated', loadDrafts);
   }, [user?.id]);
 
   const loadMyApplications = async () => {
@@ -37,11 +51,12 @@ export const ApplicantDashboard: React.FC = () => {
 
   const primaryApp = applications[0];
   const hasDeficiency = primaryApp?.status === 'query_raised';
+  const primaryDraft = drafts[0];
 
   return (
     <div className="space-y-6">
       {/* Top Welcome Banner */}
-      <div className="bg-gradient-to-r from-[#71816d] to-[#8c9c88] rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between">
+      <div className="bg-gradient-to-r from-[#71816d] to-[#8c9c88] rounded-2xl p-6 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-xs font-bold mb-2">
             <Sparkles className="w-3.5 h-3.5" />
@@ -53,7 +68,18 @@ export const ApplicantDashboard: React.FC = () => {
           </p>
         </div>
 
-        <div className="mt-4 md:mt-0 flex space-x-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {primaryDraft && (
+            <Link
+              to={`/app/apply/${primaryDraft.schemeId}`}
+              className="inline-flex items-center px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow-md transition-all animate-pulse"
+            >
+              <Clock className="w-4 h-4 mr-2 text-slate-900" />
+              <span>Continue Application ({primaryDraft.schemeCode || 'Draft'})</span>
+              <ArrowRight className="w-4 h-4 ml-1.5" />
+            </Link>
+          )}
+
           <Link
             to="/app/schemes"
             className="inline-flex items-center px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all"
@@ -63,6 +89,57 @@ export const ApplicantDashboard: React.FC = () => {
           </Link>
         </div>
       </div>
+
+      {/* Active Application Draft Alert Banner */}
+      {primaryDraft && (
+        <div className="bg-gradient-to-r from-amber-50 via-[#fcf8f1] to-amber-50/80 border-2 border-amber-400/80 rounded-2xl p-5 shadow-sm animate-in fade-in duration-200">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-start space-x-3.5">
+              <div className="p-3 bg-amber-100/90 text-amber-800 rounded-xl shrink-0 shadow-2xs">
+                <Clock className="w-6 h-6 animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[11px] font-extrabold text-amber-950 uppercase tracking-wider bg-amber-200/90 px-2.5 py-0.5 rounded-md">
+                    Unsubmitted Draft Found
+                  </span>
+                  <span className="text-xs text-amber-700 font-semibold">
+                    Auto-saved • {new Date(primaryDraft.savedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <h3 className="font-extrabold text-slate-900 text-base mt-1">
+                  {primaryDraft.schemeName} ({primaryDraft.schemeCode})
+                </h3>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  You left off at <strong className="text-slate-800">Step {primaryDraft.currentStep} of 7 ({STEP_NAMES[primaryDraft.currentStep] || 'Form'})</strong>. All your entered details and uploaded documents are safely preserved.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2.5 sm:self-center shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to discard this saved application draft?')) {
+                    draftManager.clearDraft(primaryDraft.storageKey);
+                    toast.info('Application draft discarded');
+                  }
+                }}
+                className="px-3.5 py-2.5 rounded-xl text-slate-500 hover:text-rose-700 hover:bg-rose-50 text-xs font-semibold border border-slate-200 transition-colors cursor-pointer"
+              >
+                Discard Draft
+              </button>
+              <Link
+                to={`/app/apply/${primaryDraft.schemeId}`}
+                className="inline-flex items-center px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+              >
+                <span>Continue Where You Left Off</span>
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Urgent Deficiency Alert Banner (if any) */}
       {hasDeficiency && primaryApp && (

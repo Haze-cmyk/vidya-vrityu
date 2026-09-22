@@ -14,15 +14,27 @@ import {
   LayoutGrid,
   Table as TableIcon
 } from 'lucide-react';
+import { draftManager, ApplicationDraft, STEP_NAMES } from '../../lib/draftManager';
 
 export const MyApplicationsPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [applications, setApplications] = useState<Application[]>([]);
+  const [drafts, setDrafts] = useState<ApplicationDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [autoSwiped, setAutoSwiped] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
   const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const loadDrafts = () => {
+    setDrafts(draftManager.getAllDrafts(user?.id));
+  };
+
+  useEffect(() => {
+    loadDrafts();
+    window.addEventListener('vidya_draft_updated', loadDrafts);
+    return () => window.removeEventListener('vidya_draft_updated', loadDrafts);
+  }, [user?.id]);
 
   useEffect(() => {
     mockApi.getApplications({ applicantId: user?.id || 'usr-student-1' }).then((data) => {
@@ -107,6 +119,46 @@ export const MyApplicationsPage: React.FC = () => {
           </Link>
         </div>
       </div>
+
+      {/* Active Application Draft In Progress */}
+      {drafts.length > 0 && (
+        <div className="bg-gradient-to-r from-amber-50 to-[#fdfaf5] border-2 border-amber-400/80 rounded-2xl p-5 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start space-x-3.5">
+              <div className="p-3 bg-amber-100 text-amber-800 rounded-xl shrink-0 shadow-2xs">
+                <Clock className="w-5 h-5 animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider bg-amber-200 text-amber-950 px-2 py-0.5 rounded">
+                    Draft In Progress
+                  </span>
+                  <span className="text-xs text-amber-800 font-semibold">
+                    Step {drafts[0].currentStep} of 7 ({STEP_NAMES[drafts[0].currentStep] || 'Form'})
+                  </span>
+                </div>
+                <h3 className="font-extrabold text-slate-900 text-sm mt-1">
+                  {drafts[0].schemeName} ({drafts[0].schemeCode})
+                </h3>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Unsubmitted application auto-saved. Click Continue Application to resume without losing any progress.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2.5 sm:self-center shrink-0">
+              <Link
+                to={`/app/apply/${drafts[0].schemeId}`}
+                className="inline-flex items-center px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-colors"
+              >
+                <Clock className="w-3.5 h-3.5 mr-1.5" />
+                <span>Continue Application</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mode 1: Mobile Cards View */}
       {viewMode === 'cards' && (
