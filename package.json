@@ -10,7 +10,7 @@
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "seed": "npm --prefix backend run seed",
-    "build": "npm --prefix frontend run build"
+    "build": "npm --prefix frontend run build && node -e \"const fs=require('fs'); try{fs.cpSync('frontend/dist', 'dist', {recursive: true});}catch(e){console.error(e)}\""
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
