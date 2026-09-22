@@ -1,10 +1,64 @@
 import axios from 'axios';
 import FormData from 'form-data';
-import { createRequire } from 'module';
+import PDFParser from 'pdf2json';
 
-// Use createRequire for pdf-parse if needed for commonjs compatibility
-const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
+/**
+ * Extract plain text from a PDF Buffer using pdf2json (Pure JS, Node 18/20/22 compatible)
+ * @param {Buffer} buffer
+ * @returns {Promise<string>}
+ */
+export function extractTextFromPdfBuffer(buffer) {
+  return new Promise((resolve, reject) => {
+    try {
+      const pdfParser = new PDFParser(null, 1);
+
+      pdfParser.on('pdfParser_dataError', (errData) => {
+        const errorMsg = errData?.parserError || errData?.message || 'Error parsing PDF buffer with pdf2json';
+        reject(new Error(errorMsg));
+      });
+
+      pdfParser.on('pdfParser_dataReady', (pdfData) => {
+        try {
+          let text = '';
+          if (typeof pdfParser.getRawTextContent === 'function') {
+            text = pdfParser.getRawTextContent() || '';
+          }
+
+          // Fallback extraction from page text runs if getRawTextContent is empty
+          if (!text.trim() && pdfData && Array.isArray(pdfData.Pages)) {
+            const chunks = [];
+            for (const page of pdfData.Pages) {
+              if (Array.isArray(page.Texts)) {
+                for (const t of page.Texts) {
+                  if (Array.isArray(t.R)) {
+                    for (const r of t.R) {
+                      if (r.T) {
+                        try {
+                          chunks.push(decodeURIComponent(r.T));
+                        } catch {
+                          chunks.push(r.T);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            text = chunks.join(' ');
+          }
+
+          resolve(text);
+        } catch (innerErr) {
+          reject(innerErr);
+        }
+      });
+
+      pdfParser.parseBuffer(buffer);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
 
 // Token Cache
 let cachedToken = null;
@@ -319,7 +373,7 @@ export function extractFieldsFromText(text, docType = '', compareValues = {}) {
  */
 export async function processDocumentOcr(fileBuffer, originalFileName, docType, compareValues = {}) {
   let text = '';
-  let ocrEngine = 'local-pdf-parse';
+  let ocrEngine = 'local-pdf2json';
   let apiSuccess = false;
   let ocrError = null;
 
@@ -328,28 +382,26 @@ export async function processDocumentOcr(fileBuffer, originalFileName, docType, 
     try {
       console.log(`[OCR] Initiating iLovePDF OCR for ${originalFileName}...`);
       const ocrPdfBuffer = await runILovePdfOcr(fileBuffer, originalFileName);
-      const parsed = await pdfParse(ocrPdfBuffer);
-      text = parsed.text || '';
+      text = await extractTextFromPdfBuffer(ocrPdfBuffer);
       ocrEngine = 'ilovepdf-ocr';
       apiSuccess = true;
       console.log(`[OCR] iLovePDF OCR succeeded. Extracted ${text.length} characters.`);
     } catch (err) {
       ocrError = err.message;
-      console.warn(`[OCR] iLovePDF API error (${err.message}). Falling back to local pdf-parse.`);
+      console.warn(`[OCR] iLovePDF API error (${err.message}). Falling back to local pdf2json.`);
     }
   }
 
-  // Step 2: Fallback to local pdf-parse on original buffer if iLovePDF wasn't used or failed
+  // Step 2: Fallback to local pdf2json on original buffer if iLovePDF wasn't used or failed
   if (!text || text.trim() === '') {
     try {
-      console.log(`[OCR] Running local pdf-parse on ${originalFileName}...`);
-      const parsed = await pdfParse(fileBuffer);
-      text = parsed.text || '';
+      console.log(`[OCR] Running local pdf2json on ${originalFileName}...`);
+      text = await extractTextFromPdfBuffer(fileBuffer);
       if (text.trim().length > 0) {
-        console.log(`[OCR] Local pdf-parse succeeded. Extracted ${text.length} characters.`);
+        console.log(`[OCR] Local pdf2json succeeded. Extracted ${text.length} characters.`);
       }
     } catch (err) {
-      console.warn('[OCR] Local pdf-parse error:', err.message);
+      console.warn('[OCR] Local pdf2json error:', err.message);
       if (!ocrError) ocrError = err.message;
     }
   }
