@@ -16,7 +16,8 @@ import {
   Lock,
   User,
   GraduationCap,
-  Trash2
+  Trash2,
+  ShieldCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
@@ -138,23 +139,17 @@ const CertificateUploadSlot: React.FC<CertificateUploadSlotProps> = ({
         </div>
       )}
 
-      {/* Extracted OCR Fields for Confirmation and Manual Correction */}
+      {/* Extracted OCR Verification Summary (Tamper-Proof & Read-Only) */}
       {existing && existing.ocrFields && existing.ocrFields.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-[#dfcdb1] space-y-2.5">
+        <div className="mt-3 pt-3 border-t border-[#dfcdb1] space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-extrabold text-slate-800 uppercase flex items-center">
-              <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-600" />
-              Extracted Certificate Fields (Review & Correct):
+              <ShieldCheck className="w-3.5 h-3.5 mr-1 text-[#71816d]" />
+              AI Verified Certificate Data (Read-Only):
             </span>
-            {onAutoFillToForm && (
-              <button
-                type="button"
-                onClick={() => onAutoFillToForm(existing.ocrFields || [])}
-                className="text-[10px] font-bold text-orange-700 bg-orange-100 hover:bg-orange-200 px-2 py-0.5 rounded-md transition-colors cursor-pointer"
-              >
-                Sync with Form
-              </button>
-            )}
+            <span className="text-[10px] text-slate-500 font-medium">
+              Extracted from PDF via OCR
+            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
@@ -164,7 +159,7 @@ const CertificateUploadSlot: React.FC<CertificateUploadSlotProps> = ({
                 className={`p-2.5 rounded-lg border ${
                   field.isMismatch
                     ? 'bg-rose-50 border-rose-300'
-                    : 'bg-white border-slate-200'
+                    : 'bg-white border-[#dfcdb1]'
                 }`}
               >
                 <div className="flex items-center justify-between text-[10px] font-bold text-slate-600 mb-1">
@@ -177,12 +172,9 @@ const CertificateUploadSlot: React.FC<CertificateUploadSlotProps> = ({
                     {field.confidence}% Match
                   </span>
                 </div>
-                <input
-                  type="text"
-                  value={field.value}
-                  onChange={(e) => onFieldChange(docType, field.id, e.target.value)}
-                  className="w-full px-2 py-1 border border-slate-300 rounded text-xs font-semibold text-slate-900 bg-white"
-                />
+                <div className="px-2.5 py-1.5 bg-[#fbf8f3] border border-[#dfcdb1] rounded text-xs font-semibold text-slate-900 select-all">
+                  {field.value || 'Not Detected'}
+                </div>
                 {field.isMismatch && (
                   <p className="text-[10px] text-rose-700 font-bold mt-1">
                     ⚠️ {field.expectedValue}
