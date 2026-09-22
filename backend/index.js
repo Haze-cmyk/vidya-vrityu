@@ -22,11 +22,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-const clientUrl = process.env.CLIENT_URL;
-app.use(cors({
-  origin: clientUrl ? [clientUrl, 'http://localhost:5173', 'http://127.0.0.1:5173'] : true,
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
