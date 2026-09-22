@@ -41,7 +41,7 @@ export const Sidebar: React.FC = () => {
     { to: '/admin/verification', label: 'Verification Queue', icon: UserCheck, badge: 'AI-OCR' },
     { to: '/admin/scrutiny', label: 'Scrutiny Workflow', icon: FileSearch },
     { to: '/admin/selection', label: 'Merit List Engine', icon: Award },
-    { to: '/admin/schemes/configure', label: 'Scheme Config Engine', icon: Sliders },
+    { to: '/admin/schemes/configure', label: 'Create New Scheme', icon: Sliders },
     { to: '/admin/communications', label: 'Communications', icon: MessageSquare },
     { to: '/admin/reports', label: 'Reports & Analytics', icon: BarChart3 },
     { to: '/admin/audit', label: 'System Audit Log', icon: History },

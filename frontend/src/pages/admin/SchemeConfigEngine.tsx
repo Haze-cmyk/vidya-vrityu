@@ -67,9 +67,9 @@ export const SchemeConfigEnginePage: React.FC = () => {
       <div className="bg-white p-6 rounded-2xl border border-[#c9b79c] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">MoTA Administration</span>
-          <h1 className="text-2xl font-bold text-slate-900 mt-0.5">No-Code Scheme Configuration Engine</h1>
+          <h1 className="text-2xl font-bold text-slate-900 mt-0.5">Create New Scheme</h1>
           <p className="text-xs text-slate-500 mt-1">
-            Create or edit MoTA scholarship schemes with dynamic eligibility rules without code changes.
+            Configure and publish new MoTA scholarship schemes with dynamic eligibility rules without code changes.
           </p>
         </div>
 
