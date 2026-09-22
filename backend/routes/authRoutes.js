@@ -52,14 +52,23 @@ router.post('/register', async (req, res) => {
       landline,
       password,
       tribe,
-      aadhaar
+      aadhaar,
+      dob,
+      gender,
+      fatherName,
+      motherName,
+      district,
+      pincode,
+      permanentAddress,
+      annualIncome,
+      highestQualification
     } = req.body;
 
     const resolvedName = (name || fullName || '').trim();
     const resolvedEmail = (email || '').toLowerCase().trim();
     const resolvedPhone = (phone || mobile || '').trim();
     const resolvedAltPhone = (altPhone || altMobile || '').trim();
-    const resolvedAddress = (officeAddress || address || '').trim();
+    const resolvedAddress = (permanentAddress || officeAddress || address || '').trim();
 
     if (!resolvedEmail || !resolvedName) {
       return res.status(400).json({ message: 'Name and email are required' });
@@ -85,10 +94,19 @@ router.post('/register', async (req, res) => {
       designation: designation || '',
       state: state || '',
       officeAddress: resolvedAddress,
+      permanentAddress: resolvedAddress,
       landline: landline || '',
       password: password || '',
       tribe: tribe || '',
       aadhaar: aadhaar || '',
+      dob: dob || '',
+      gender: gender || 'Female',
+      fatherName: fatherName || '',
+      motherName: motherName || '',
+      district: district || '',
+      pincode: pincode || '',
+      annualIncome: Number(annualIncome) || 0,
+      highestQualification: highestQualification || '',
       createdAt: new Date().toISOString()
     });
 

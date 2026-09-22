@@ -220,30 +220,30 @@ export const ApplyFormPage: React.FC = () => {
   // Form State initialized from user profile, without fake dummy names
   const [personal, setPersonal] = useState<PersonalDetails>({
     fullName: user?.name || '',
-    dob: '',
-    gender: 'Female',
+    dob: user?.dob || '',
+    gender: (user?.gender as any) || 'Female',
     category: 'ST',
     tribeName: user?.tribe || '',
-    fatherName: '',
-    motherName: '',
+    fatherName: user?.fatherName || '',
+    motherName: user?.motherName || '',
     aadhaarMasked: user?.aadhaar || '',
     phone: user?.phone || '',
     email: user?.email || '',
     physicallyHandicapped: 'No',
-    annualIncome: 0
+    annualIncome: user?.annualIncome || 0
   });
 
   const [address, setAddress] = useState({
-    permanentAddress: '',
+    permanentAddress: user?.permanentAddress || user?.officeAddress || '',
     state: user?.state || 'Odisha',
-    district: '',
-    pincode: '',
+    district: user?.district || '',
+    pincode: user?.pincode || '',
     domicileCertNo: '',
     domicileState: user?.state || 'Odisha'
   });
 
   const [academic, setAcademic] = useState({
-    highestQualification: '',
+    highestQualification: user?.highestQualification || '',
     institutionName: '',
     courseName: '',
     passingYear: '',
@@ -272,6 +272,43 @@ export const ApplyFormPage: React.FC = () => {
   // Uploaded Documents state
   const [documents, setDocuments] = useState<Document[]>([]);
   const [declarationConfirmed, setDeclarationConfirmed] = useState(false);
+
+  // Pre-fill / reload details from registration profile
+  const handlePrefillFromProfile = (notify = true) => {
+    if (!user) return;
+    setPersonal((prev) => ({
+      ...prev,
+      fullName: user.name || prev.fullName,
+      dob: user.dob || prev.dob,
+      gender: (user.gender as any) || prev.gender || 'Female',
+      category: 'ST',
+      tribeName: user.tribe || prev.tribeName,
+      fatherName: user.fatherName || prev.fatherName,
+      motherName: user.motherName || prev.motherName,
+      aadhaarMasked: user.aadhaar || prev.aadhaarMasked,
+      phone: user.phone || prev.phone,
+      email: user.email || prev.email,
+      annualIncome: user.annualIncome || prev.annualIncome
+    }));
+
+    setAddress((prev) => ({
+      ...prev,
+      permanentAddress: user.permanentAddress || user.officeAddress || prev.permanentAddress,
+      state: user.state || prev.state || 'Odisha',
+      district: user.district || prev.district,
+      pincode: user.pincode || prev.pincode,
+      domicileState: user.state || prev.domicileState || 'Odisha'
+    }));
+
+    setBank((prev) => ({
+      ...prev,
+      accountHolderName: user.name || prev.accountHolderName
+    }));
+
+    if (notify) {
+      toast.success('Pre-filled details from your registration profile! All fields remain fully editable.');
+    }
+  };
 
   useEffect(() => {
     if (schemeId) {
@@ -304,28 +341,12 @@ export const ApplyFormPage: React.FC = () => {
     }
   }, [schemeId, user, navigate, editAppId]);
 
-  // Keep form in sync when user profile loads
+  // Keep form in sync when user profile loads initially
   useEffect(() => {
-    if (user) {
-      setPersonal((prev) => ({
-        ...prev,
-        fullName: prev.fullName || user.name || '',
-        tribeName: prev.tribeName || user.tribe || '',
-        phone: prev.phone || user.phone || '',
-        email: prev.email || user.email || '',
-        aadhaarMasked: prev.aadhaarMasked || user.aadhaar || ''
-      }));
-      setAddress((prev) => ({
-        ...prev,
-        state: prev.state || user.state || 'Odisha',
-        domicileState: prev.domicileState || user.state || 'Odisha'
-      }));
-      setBank((prev) => ({
-        ...prev,
-        accountHolderName: prev.accountHolderName || user.name || ''
-      }));
+    if (user && !editAppId) {
+      handlePrefillFromProfile(false);
     }
-  }, [user]);
+  }, [user, editAppId]);
 
   const handleDocUploaded = (newDoc: Document) => {
     setDocuments((prev) => [...prev.filter((d) => d.type !== newDoc.type), newDoc]);
@@ -748,27 +769,76 @@ export const ApplyFormPage: React.FC = () => {
         {/* Step 1: Personal Details */}
         {currentStep === 1 && (
           <div className="space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm border-b pb-2">Step 1: Personal Information</h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2">
+              <h3 className="font-bold text-slate-900 text-sm">Step 1: Personal Information</h3>
+              <span className="text-[11px] text-slate-500">Review & edit pre-filled profile details</span>
+            </div>
+
+            {/* Registration Profile Pre-fill Notice Banner */}
+            <div className="p-3 sm:p-3.5 rounded-xl bg-[#fbf8f3] border border-[#dfcdb1] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-xs">
+              <div className="flex items-center space-x-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-[#f1e0c5] text-[#71816d] flex items-center justify-center shrink-0">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-xs font-bold text-slate-900">
+                      Pre-filled from Registration Profile
+                    </span>
+                    <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.2 rounded border border-emerald-200">
+                      Auto-loaded
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 truncate">
+                    Data loaded for {personal.fullName || user?.name || 'Applicant'}. You can freely edit any field below.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handlePrefillFromProfile(true)}
+                className="w-full sm:w-auto inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-[#f1e0c5] hover:bg-[#e8d6ba] text-[#2c352a] text-xs font-bold border border-[#c9b79c] transition-colors cursor-pointer shrink-0"
+                title="Reload fields from registration profile"
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1 text-[#71816d]" />
+                <span>Reload Profile Data</span>
+              </button>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700">Full Candidate Name</label>
+                <label className="block text-xs font-semibold text-slate-700">Full Candidate Name *</label>
                 <input
                   type="text"
                   value={personal.fullName}
+                  placeholder="Enter full name"
                   onChange={(e) => setPersonal({ ...personal, fullName: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700">Date of Birth</label>
+                <label className="block text-xs font-semibold text-slate-700">Date of Birth *</label>
                 <input
                   type="date"
                   value={personal.dob}
                   onChange={(e) => setPersonal({ ...personal, dob: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700">Gender *</label>
+                <select
+                  value={personal.gender}
+                  onChange={(e) => setPersonal({ ...personal, gender: e.target.value as any })}
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden bg-white"
+                >
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
 
               <div>
@@ -782,12 +852,35 @@ export const ApplyFormPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700">ST Tribe Community Name</label>
+                <label className="block text-xs font-semibold text-slate-700">ST Tribe Community Name *</label>
                 <input
                   type="text"
                   value={personal.tribeName}
+                  placeholder="e.g. Santhal, Gond, Bodo, Bhil"
                   onChange={(e) => setPersonal({ ...personal, tribeName: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700">Mobile Phone Number *</label>
+                <input
+                  type="tel"
+                  value={personal.phone}
+                  placeholder="10 digit mobile"
+                  onChange={(e) => setPersonal({ ...personal, phone: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700">Email Address *</label>
+                <input
+                  type="email"
+                  value={personal.email}
+                  placeholder="Enter email address"
+                  onChange={(e) => setPersonal({ ...personal, email: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden"
                 />
               </div>
 
@@ -796,8 +889,9 @@ export const ApplyFormPage: React.FC = () => {
                 <input
                   type="text"
                   value={personal.fatherName}
+                  placeholder="Enter father's name"
                   onChange={(e) => setPersonal({ ...personal, fatherName: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden"
                 />
               </div>
 
@@ -806,28 +900,31 @@ export const ApplyFormPage: React.FC = () => {
                 <input
                   type="text"
                   value={personal.motherName}
+                  placeholder="Enter mother's name"
                   onChange={(e) => setPersonal({ ...personal, motherName: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700">Annual Family Income (INR)</label>
+                <label className="block text-xs font-semibold text-slate-700">Annual Family Income (INR) *</label>
                 <input
                   type="number"
                   value={personal.annualIncome}
+                  placeholder="Enter annual income"
                   onChange={(e) => setPersonal({ ...personal, annualIncome: Number(e.target.value) })}
-                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs"
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-[#71816d] outline-hidden"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700">Aadhaar (Masked)</label>
+                <label className="block text-xs font-semibold text-slate-700">Aadhaar / Photo ID Reference</label>
                 <input
                   type="text"
-                  disabled
                   value={personal.aadhaarMasked}
-                  className="mt-1 block w-full px-3 py-2 border border-[#c9b79c] rounded-lg text-xs bg-[#e8d6ba] font-medium"
+                  placeholder="XXXX-XXXX-1234 or ID"
+                  onChange={(e) => setPersonal({ ...personal, aadhaarMasked: e.target.value })}
+                  className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-[#71816d] outline-hidden"
                 />
               </div>
             </div>
@@ -837,7 +934,10 @@ export const ApplyFormPage: React.FC = () => {
         {/* Step 2: Address */}
         {currentStep === 2 && (
           <div className="space-y-4">
-            <h3 className="font-bold text-slate-900 text-sm border-b pb-2">Step 2: Address & Domicile Details</h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-2">
+              <h3 className="font-bold text-slate-900 text-sm">Step 2: Address & Domicile Details</h3>
+              <span className="text-[11px] text-slate-500">Review & edit pre-filled address</span>
+            </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700">Permanent Residential Address</label>

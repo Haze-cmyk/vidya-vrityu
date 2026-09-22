@@ -22,10 +22,19 @@ export interface User {
   createdAt: string;
   designation?: string;
   officeAddress?: string;
+  permanentAddress?: string;
   landline?: string;
   tribe?: string;
   aadhaar?: string;
+  dob?: string;
+  gender?: 'Male' | 'Female' | 'Other' | string;
+  fatherName?: string;
+  motherName?: string;
   state?: string;
+  district?: string;
+  pincode?: string;
+  annualIncome?: number;
+  highestQualification?: string;
   avatar?: string;
 }
 
