@@ -1,0 +1,28 @@
+{
+  "name": "vidya-vrtti-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Express and MongoDB backend for Vidya-Vrtti Unified Scholarship Portal",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.2",
+    "express": "^5.2.1",
+    "form-data": "^4.0.6",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.1",
+    "multer": "^2.4.0",
+    "pdf-parse": "^2.4.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/multer": "^2.2.0",
+    "@types/node": "^24.13.5"
+  }
+}
