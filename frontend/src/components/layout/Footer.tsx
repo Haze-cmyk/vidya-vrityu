@@ -61,11 +61,44 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar: Copyright & Attribution */}
-        <div className="pt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-100 gap-2">
-          <p className="text-slate-100 font-semibold tracking-wide text-center sm:text-left">
+        <div className="pt-5 flex flex-col md:flex-row items-center justify-between text-xs text-slate-100 gap-3">
+          <p className="text-slate-200 font-semibold tracking-wide text-center md:text-left">
             © 2026 Ministry of Tribal Affairs, Government of India.
           </p>
-          <p className="flex items-center text-amber-200 font-bold mt-1 sm:mt-0 text-center sm:text-right">
+
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <span className="text-slate-300 text-[11px]">Contributors:</span>
+            <a
+              href="https://github.com/Haze-cmyk"
+              target="_blank"
+              rel="noreferrer"
+              title="Jayesh Thakur (@Haze-cmyk)"
+              className="inline-flex items-center space-x-1.5 bg-[#485645] hover:bg-[#3d493a] px-2.5 py-1 rounded-full text-[11px] text-amber-200 font-bold border border-[#6c7d69] transition-all"
+            >
+              <img
+                src="https://github.com/Haze-cmyk.png"
+                alt="Haze-cmyk"
+                className="w-4 h-4 rounded-full border border-amber-300 object-cover"
+              />
+              <span>@Haze-cmyk</span>
+            </a>
+            <a
+              href="https://github.com/AryanTripathiJi"
+              target="_blank"
+              rel="noreferrer"
+              title="Aryan Tripathi (@AryanTripathiJi)"
+              className="inline-flex items-center space-x-1.5 bg-[#485645] hover:bg-[#3d493a] px-2.5 py-1 rounded-full text-[11px] text-amber-200 font-bold border border-[#6c7d69] transition-all"
+            >
+              <img
+                src="https://github.com/AryanTripathiJi.png"
+                alt="AryanTripathiJi"
+                className="w-4 h-4 rounded-full border border-amber-300 object-cover"
+              />
+              <span>@AryanTripathiJi</span>
+            </a>
+          </div>
+
+          <p className="flex items-center text-amber-200 font-bold text-center md:text-right">
             Designed with <Heart className="w-3.5 h-3.5 text-rose-400 mx-1.5 fill-rose-500 shrink-0" /> by Null Exploiters
           </p>
         </div>

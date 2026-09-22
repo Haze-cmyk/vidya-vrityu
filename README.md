@@ -124,3 +124,12 @@ git push -u origin main
 ```
 
 *(Note: `.gitignore` is pre-configured to ensure no `node_modules` or sensitive `.env` files are ever uploaded).*
+
+---
+
+## 👥 Project Contributors
+
+| Contributor | Avatar | Role | GitHub |
+| :--- | :---: | :--- | :--- |
+| **Jayesh Thakur** | <img src="https://github.com/Haze-cmyk.png" width="50" height="50" style="border-radius: 50%" alt="Haze-cmyk" /> | Lead Architect & Full-Stack Developer | [@Haze-cmyk](https://github.com/Haze-cmyk) |
+| **Aryan Tripathi** | <img src="https://github.com/AryanTripathiJi.png" width="50" height="50" style="border-radius: 50%" alt="AryanTripathiJi" /> | Core Developer & Contributor | [@AryanTripathiJi](https://github.com/AryanTripathiJi) |
