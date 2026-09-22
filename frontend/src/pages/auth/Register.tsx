@@ -49,7 +49,6 @@ export const RegisterPage: React.FC = () => {
         phone: data.mobile as string,
         altPhone: (data.altMobile as string) || '',
         state: data.state as string,
-        designation: (data.designation as string) || '',
         officeAddress: (data.address as string) || '',
         landline: (data.landline as string) || '',
         password: (data.password as string) || ''
@@ -88,16 +87,7 @@ export const RegisterPage: React.FC = () => {
           </span>
 
           <h2 className="text-3xl font-extrabold text-[#2c352a] tracking-tight">Create an account</h2>
-          <p className="mt-1 text-sm text-[#5a6857] font-medium">Join the Vidya-Vrtti Vidya-Vrtti Scholarship Platform</p>
-
-          {/* Already have an account banner */}
-          <div className="mt-3 inline-flex items-center text-xs text-[#5a6857] bg-[#fbf8f3] px-4 py-1.5 rounded-full border border-[#dfcdb1]">
-            <span>Already have an account?</span>
-            <Link to="/login" className="font-extrabold text-[#71816d] hover:text-[#5b6a57] hover:underline ml-1.5 flex items-center">
-              <span>Sign in</span>
-              <ArrowRight className="w-3 h-3 ml-0.5" />
-            </Link>
-          </div>
+          <p className="mt-1 text-sm text-[#5a6857] font-medium">Join the Vidya-Vrtti Scholarship Platform</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5 text-sm">
@@ -153,26 +143,6 @@ export const RegisterPage: React.FC = () => {
                 {INDIAN_STATES.map((state) => (
                   <option key={state} value={state}>{state}</option>
                 ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Designation */}
-          <div className="flex flex-col md:flex-row md:items-center pt-2">
-            <label className="md:w-1/3 mb-1.5 md:mb-0 font-bold text-xs uppercase tracking-wider text-[#2c352a]">
-              Designation <span className="text-amber-700">*</span>
-            </label>
-            <div className="md:w-2/3">
-              <select
-                name="designation"
-                required
-                className="w-full px-4 py-3 bg-[#fbf8f3] border border-[#c9b79c] rounded-xl focus:ring-2 focus:ring-[#71816d] focus:border-[#71816d] focus:bg-white outline-hidden transition-all text-slate-900 font-medium"
-              >
-                <option value="">-- Select Designation --</option>
-                <option value="student">Student</option>
-                <option value="clerk_principal">Clerk/Principal</option>
-                <option value="nodal_officer">Nodal Officer</option>
-                <option value="mota_admin">MoTA Administration</option>
               </select>
             </div>
           </div>
