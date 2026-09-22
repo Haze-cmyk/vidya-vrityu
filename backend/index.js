@@ -65,6 +65,7 @@ app.get('/api/health', (req, res) => {
     database: connected ? 'connected' : 'disconnected',
     mongoUriConfigured: !!(MONGO_URI && MONGO_URI.trim() !== ''),
     databaseError: lastConnectionError ? lastConnectionError.message : null,
+    stack: lastConnectionError ? lastConnectionError.stack : null,
     message: connected
       ? 'Database connected and operational'
       : (lastConnectionError ? `Database error: ${lastConnectionError.message}` : 'No MONGO_URI configured.'),

@@ -5,8 +5,8 @@
   "type": "module",
   "description": "Express and MongoDB backend for Vidya-Vrtti Unified Scholarship Portal",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js",
+    "start": "node entry.js",
+    "dev": "node --watch entry.js",
     "seed": "node seed.js"
   },
   "dependencies": {
