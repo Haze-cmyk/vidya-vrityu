@@ -9,8 +9,8 @@ import {
   OCRField,
   Document
 } from '../types';
-
-const BASE_URL = '/api';
+const RAW_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '');
+const BASE_URL = RAW_BASE_URL === '' ? '/api' : (RAW_BASE_URL.endsWith('/api') ? RAW_BASE_URL : `${RAW_BASE_URL}/api`);
 
 const CURRENT_USER_STORAGE_KEY = 'vidya_vrtti_current_user';
 const TOKEN_STORAGE_KEY = 'vidya_vrtti_token';

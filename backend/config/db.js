@@ -10,7 +10,7 @@ dotenv.config();
  * If none is provided, it defaults to empty string so the server can run without crashing on Render.com
  * until you add your cloud database URI in the Render dashboard.
  */
-export const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || '';
+export const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL || process.env.MONGODB_URL || '';
 
 /**
  * Check if MongoDB is currently connected
