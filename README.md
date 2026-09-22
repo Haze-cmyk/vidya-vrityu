@@ -129,7 +129,23 @@ git push -u origin main
 
 ## 👥 Project Contributors
 
-| Contributor | Avatar | Role | GitHub |
-| :--- | :---: | :--- | :--- |
-| **Jayesh Thakur** | <img src="https://github.com/Haze-cmyk.png" width="50" height="50" style="border-radius: 50%" alt="Haze-cmyk" /> | Lead Architect & Full-Stack Developer | [@Haze-cmyk](https://github.com/Haze-cmyk) |
-| **Aryan Tripathi** | <img src="https://github.com/AryanTripathiJi.png" width="50" height="50" style="border-radius: 50%" alt="AryanTripathiJi" /> | Core Developer & Contributor | [@AryanTripathiJi](https://github.com/AryanTripathiJi) |
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Haze-cmyk">
+        <img src="https://github.com/Haze-cmyk.png" width="100px;" alt="Jayesh Thakur" style="border-radius: 50%;" /><br />
+        <sub><b>Jayesh Thakur</b></sub>
+      </a>
+      <br />
+      <sub><a href="https://github.com/Haze-cmyk">@Haze-cmyk</a></sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/AryanTripathiJi">
+        <img src="https://github.com/AryanTripathiJi.png" width="100px;" alt="Aryan Tripathi" style="border-radius: 50%;" /><br />
+        <sub><b>Aryan Tripathi</b></sub>
+      </a>
+      <br />
+      <sub><a href="https://github.com/AryanTripathiJi">@AryanTripathiJi</a></sub>
+    </td>
+  </tr>
+</table>
