@@ -120,7 +120,25 @@ router.post('/register', async (req, res) => {
 // PUT /api/auth/profile (Update user details)
 router.put('/profile', async (req, res) => {
   try {
-    const { id, name, email, phone, state, tribe, avatar } = req.body;
+    const {
+      id,
+      name,
+      email,
+      phone,
+      state,
+      tribe,
+      avatar,
+      dob,
+      gender,
+      fatherName,
+      motherName,
+      permanentAddress,
+      district,
+      pincode,
+      annualIncome,
+      highestQualification
+    } = req.body;
+
     if (!id && !email) {
       return res.status(400).json({ message: 'User ID or current email is required' });
     }
@@ -158,6 +176,33 @@ router.put('/profile', async (req, res) => {
     }
     if (avatar !== undefined) {
       user.avatar = avatar;
+    }
+    if (dob !== undefined) {
+      user.dob = dob;
+    }
+    if (gender !== undefined) {
+      user.gender = gender;
+    }
+    if (fatherName !== undefined) {
+      user.fatherName = fatherName.trim();
+    }
+    if (motherName !== undefined) {
+      user.motherName = motherName.trim();
+    }
+    if (permanentAddress !== undefined) {
+      user.permanentAddress = permanentAddress.trim();
+    }
+    if (district !== undefined) {
+      user.district = district.trim();
+    }
+    if (pincode !== undefined) {
+      user.pincode = pincode.trim();
+    }
+    if (annualIncome !== undefined) {
+      user.annualIncome = Number(annualIncome) || 0;
+    }
+    if (highestQualification !== undefined) {
+      user.highestQualification = highestQualification.trim();
     }
 
     await user.save();
