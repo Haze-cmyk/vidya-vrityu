@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 dotenv.config();
 
 // Centralized MongoDB configuration
-import { connectDB, isDatabaseConnected, MONGO_URI } from './config/db.js';
+import { connectDB, isDatabaseConnected, MONGO_URI, lastConnectionError } from './config/db.js';
 
 import authRoutes from './routes/authRoutes.js';
 import schemeRoutes from './routes/schemeRoutes.js';
@@ -47,15 +47,17 @@ app.use('/api/stats', statsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/audit', auditRoutes);
 
-// Health check endpoint (Used by Render.com and frontend)
+// Health check endpoint (Used by monitoring, Railway, Render, and frontend)
 app.get('/api/health', (req, res) => {
   const connected = isDatabaseConnected();
   res.json({
     status: 'ok',
     database: connected ? 'connected' : 'disconnected',
+    mongoUriConfigured: !!(MONGO_URI && MONGO_URI.trim() !== ''),
+    databaseError: lastConnectionError ? lastConnectionError.message : null,
     message: connected
       ? 'Database connected and operational'
-      : 'Server is running in standalone mode. To connect a cloud database, set MONGO_URI in your Render environment variables.',
+      : (lastConnectionError ? `Database error: ${lastConnectionError.message}` : 'No MONGO_URI configured.'),
     timestamp: new Date().toISOString()
   });
 });

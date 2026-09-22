@@ -22,19 +22,19 @@ export function isDatabaseConnected() {
   return mongoose.connection.readyState === 1;
 }
 
+export let lastConnectionError = null;
+
 /**
  * Connect to MongoDB with graceful error handling for cloud deployments (Render.com, etc.)
  */
 export async function connectDB() {
+  lastConnectionError = null;
   if (!MONGO_URI || MONGO_URI.trim() === '') {
+    lastConnectionError = new Error('No MONGO_URI provided in environment');
     console.warn('\x1b[33m%s\x1b[0m', `
 ===============================================================================
  [NOTICE] No MongoDB URI provided (MONGO_URI / MONGODB_URI is empty).
  The server is running in STANDALONE mode.
- 
- Deploying to Render.com?
- You can add your cloud database anytime in:
- Render Dashboard -> Environment Variables -> MONGO_URI=<your-db-connection-string>
 ===============================================================================
     `);
     return false;
@@ -43,18 +43,16 @@ export async function connectDB() {
   try {
     console.log(`[Vidya-Vrtti] Connecting to MongoDB...`);
     await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 5000
+      serverSelectionTimeoutMS: 8000
     });
     console.log('\x1b[32m%s\x1b[0m', `[Vidya-Vrtti] Successfully connected to MongoDB database.`);
     return true;
   } catch (err) {
+    lastConnectionError = err;
     console.error('\x1b[31m%s\x1b[0m', `
 ===============================================================================
  [WARNING] Could not connect to MongoDB database!
  Exact error: ${err.message}
- 
- The API server will still stay ONLINE so your Render deployment stays healthy.
- Once your cloud database is online, set MONGO_URI in your dashboard.
 ===============================================================================
     `);
     return false;
