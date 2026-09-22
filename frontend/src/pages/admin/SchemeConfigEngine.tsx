@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { mockApi } from '../../lib/mockApi';
 import { Scheme, EligibilityRule } from '../../types';
-import { Sliders, Plus, Trash2, Save, Eye, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Sliders, Plus, Trash2, Save, Eye, Sparkles, CheckCircle2, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const SchemeConfigEnginePage: React.FC = () => {
@@ -188,26 +188,102 @@ export const SchemeConfigEnginePage: React.FC = () => {
         </div>
 
         {/* Right Panel: Live Applicant Form Preview */}
-        <div className="lg:col-span-5 bg-slate-900 text-white p-6 rounded-2xl border border-slate-800 shadow-xl space-y-4">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
-            <span className="text-xs font-bold text-amber-400 flex items-center">
-              <Eye className="w-4 h-4 mr-1.5" />
+        <div className="lg:col-span-5 bg-white p-6 rounded-2xl border border-[#c9b79c] shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-[#dfcdb1] pb-3">
+            <span className="text-xs font-bold text-[#2c352a] flex items-center">
+              <Eye className="w-4 h-4 mr-1.5 text-[#71816d]" />
               Live Applicant Form Preview
             </span>
-            <span className="text-[10px] font-mono text-slate-400">Real-time sync</span>
+            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-[#f1e0c5] text-[#5a6857] border border-[#dfcdb1] flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+              Real-time sync
+            </span>
           </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3 text-xs">
+          <div className="bg-[#fbf8f3] border border-[#dfcdb1] rounded-xl p-4 sm:p-5 space-y-3.5 text-xs">
             <div className="flex items-center justify-between">
-              <span className="bg-amber-500 text-navy-950 font-extrabold text-[10px] px-2 py-0.5 rounded-md">
-                {schemeCode}
+              <span className="bg-[#71816d] text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-md tracking-wide shadow-xs">
+                {schemeCode || 'SCHEME-CODE'}
               </span>
-              <span className="text-slate-400 font-medium">{category}</span>
+              <span className="bg-[#e8d6ba] text-[#2c352a] font-bold text-[10px] px-2.5 py-0.5 rounded-md border border-[#c9b79c]">
+                {category}
+              </span>
             </div>
-            <h4 className="font-bold text-sm text-white">{schemeName}</h4>
-            <p className="text-slate-300 text-[11px] leading-relaxed">{description}</p>
-            <div className="p-2.5 rounded-lg bg-white/10 text-amber-300 font-bold">
-              Assistance: {amount} ({totalSlots} Slots)
+
+            <div>
+              <h4 className="font-bold text-base text-[#2c352a]">{schemeName || 'Untitled Scheme'}</h4>
+              <p className="text-slate-600 text-[11px] leading-relaxed mt-1">
+                {description || 'No description provided yet.'}
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-[#f1e0c5] border border-[#c9b79c] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-[#5a6857] block">Financial Assistance</span>
+                <span className="font-extrabold text-[#71816d] text-sm">{amount}</span>
+              </div>
+              <div className="sm:text-right">
+                <span className="text-[10px] uppercase font-bold text-[#5a6857] block">Quota / Slots</span>
+                <span className="font-bold text-slate-800 text-xs">{totalSlots} National Slots</span>
+              </div>
+            </div>
+
+            {/* Dynamic Eligibility Preview */}
+            <div className="pt-2 border-t border-[#dfcdb1] space-y-2">
+              <h5 className="font-bold text-[#2c352a] text-xs flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#71816d]" />
+                Eligibility Criteria ({rules.length})
+              </h5>
+              <div className="space-y-1.5">
+                {rules.map((rule, idx) => (
+                  <div
+                    key={rule.id || idx}
+                    className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#dfcdb1] text-[11px]"
+                  >
+                    <span className="font-semibold text-slate-700">{rule.field}</span>
+                    <span className="font-bold text-[#5a6857] bg-[#f1e0c5] px-2 py-0.5 rounded text-[10px]">
+                      {rule.operator === 'eq'
+                        ? 'Equals'
+                        : rule.operator === 'lt'
+                        ? 'Less than'
+                        : rule.operator === 'gt'
+                        ? 'Greater than'
+                        : 'In'}{' '}
+                      {String(rule.value)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Required Documents Preview */}
+            <div className="pt-2 border-t border-[#dfcdb1] space-y-2">
+              <h5 className="font-bold text-[#2c352a] text-xs flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-[#71816d]" />
+                Required Documents ({requiredDocs.length})
+              </h5>
+              <div className="flex flex-wrap gap-1.5">
+                {requiredDocs.map((doc, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[10px] font-semibold bg-white text-slate-700 border border-[#dfcdb1] px-2.5 py-1 rounded-md flex items-center"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#71816d] mr-1.5"></span>
+                    {doc}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Simulated Applicant Button */}
+            <div className="pt-2">
+              <button
+                type="button"
+                disabled
+                className="w-full py-2.5 px-4 rounded-xl bg-[#71816d]/20 text-[#5a6857] font-bold text-xs border border-[#71816d]/30 flex items-center justify-center space-x-2 cursor-not-allowed"
+              >
+                <span>Apply for Scheme (Applicant Portal View)</span>
+              </button>
             </div>
           </div>
         </div>

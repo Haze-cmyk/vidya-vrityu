@@ -239,13 +239,13 @@ export const ApplicationReviewPage: React.FC = () => {
 
             {/* OCR Extracted Overlay Box */}
             {activeDoc && (
-              <div className="p-4 rounded-xl bg-slate-900 text-white space-y-3">
+              <div className="p-4 rounded-xl bg-[#fbf8f3] border border-[#c9b79c] space-y-3 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span className="text-xs font-extrabold text-amber-300">AI OCR Field Extractions</span>
+                    <Sparkles className="w-4 h-4 text-[#71816d]" />
+                    <span className="text-xs font-extrabold text-[#2c352a]">AI OCR Field Extractions</span>
                   </div>
-                  <span className="text-[10px] font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-bold bg-[#f1e0c5] text-[#5a6857] border border-[#dfcdb1] px-2 py-0.5 rounded-md">
                     Confidence: {activeDoc.ocrConfidence || 95}%
                   </span>
                 </div>
@@ -256,19 +256,19 @@ export const ApplicationReviewPage: React.FC = () => {
                       key={f.id}
                       className={`p-2.5 rounded-lg border text-xs ${
                         f.confidence < 70 || f.isMismatch
-                          ? 'bg-rose-950/80 border-rose-500 text-rose-200'
-                          : 'bg-white/10 border-white/20 text-slate-200'
+                          ? 'bg-rose-50 border-rose-300 text-rose-800'
+                          : 'bg-white border-[#dfcdb1] text-slate-800'
                       }`}
                     >
-                      <div className="flex justify-between items-center text-[10px] font-bold text-slate-400">
+                      <div className="flex justify-between items-center text-[10px] font-bold text-[#5a6857]">
                         <span>{f.field}</span>
-                        <span className={f.confidence < 70 ? 'text-rose-400 font-extrabold' : 'text-emerald-400'}>
+                        <span className={f.confidence < 70 ? 'text-rose-600 font-extrabold' : 'text-emerald-700'}>
                           {f.confidence}% Match
                         </span>
                       </div>
-                      <div className="font-bold text-white mt-1">{f.value}</div>
+                      <div className="font-bold text-[#2c352a] mt-1">{f.value}</div>
                       {f.isMismatch && (
-                        <div className="text-[10px] text-rose-300 mt-1 font-semibold">
+                        <div className="text-[10px] text-rose-600 mt-1 font-semibold">
                           ⚠️ Issue: {f.expectedValue}
                         </div>
                       )}
