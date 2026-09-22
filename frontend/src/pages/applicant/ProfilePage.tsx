@@ -423,14 +423,9 @@ export const ProfilePage: React.FC = () => {
 
           {/* 1. Full Name */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
-              <span className="flex items-center">
-                <UserIcon className="w-3.5 h-3.5 mr-1.5 text-[#71816d]" />
-                Full Name *
-              </span>
-              <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.2 rounded font-semibold border border-emerald-200">
-                Directly Editable
-              </span>
+            <label className="text-xs font-bold text-slate-700 flex items-center">
+              <UserIcon className="w-3.5 h-3.5 mr-1.5 text-[#71816d]" />
+              Full Name *
             </label>
             <input
               type="text"
@@ -444,14 +439,9 @@ export const ProfilePage: React.FC = () => {
 
           {/* 2. Email Address */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
-              <span className="flex items-center">
-                <Mail className="w-3.5 h-3.5 mr-1.5 text-[#71816d]" />
-                Email Address *
-              </span>
-              <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.2 rounded font-semibold border border-emerald-200">
-                Directly Editable
-              </span>
+            <label className="text-xs font-bold text-slate-700 flex items-center">
+              <Mail className="w-3.5 h-3.5 mr-1.5 text-[#71816d]" />
+              Email Address *
             </label>
             <input
               type="email"
@@ -465,14 +455,9 @@ export const ProfilePage: React.FC = () => {
 
           {/* 3. Mobile / Phone Number */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
-              <span className="flex items-center">
-                <Phone className="w-3.5 h-3.5 mr-1.5 text-[#71816d]" />
-                Mobile / Phone Number *
-              </span>
-              <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.2 rounded font-semibold border border-emerald-200">
-                Directly Editable
-              </span>
+            <label className="text-xs font-bold text-slate-700 flex items-center">
+              <Phone className="w-3.5 h-3.5 mr-1.5 text-[#71816d]" />
+              Mobile / Phone Number *
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs text-slate-600 font-bold pointer-events-none">
@@ -492,14 +477,9 @@ export const ProfilePage: React.FC = () => {
 
           {/* 4. State of Domicile */}
           <div className="flex flex-col space-y-1.5">
-            <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
-              <span className="flex items-center">
-                <MapPin className="w-3.5 h-3.5 mr-1.5 text-[#71816d]" />
-                State of Domicile *
-              </span>
-              <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.2 rounded font-semibold border border-emerald-200">
-                Directly Editable
-              </span>
+            <label className="text-xs font-bold text-slate-700 flex items-center">
+              <MapPin className="w-3.5 h-3.5 mr-1.5 text-[#71816d]" />
+              State of Domicile *
             </label>
             <select
               value={state}
