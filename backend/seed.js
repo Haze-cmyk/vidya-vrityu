@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import { connectDB, MONGO_URI } from './config/db.js';
 import { User } from './models/User.js';
 import { Scheme } from './models/Scheme.js';
 import { Application } from './models/Application.js';
@@ -9,13 +10,15 @@ import { AuditLog } from './models/AuditLog.js';
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/vidya-vrtti-db';
-
 async function seed() {
+  const connected = await connectDB();
+  if (!connected) {
+    console.error('\x1b[31m%s\x1b[0m', '[SEED ERROR] Cannot seed database without an active MongoDB connection.');
+    console.log('[SEED] Please provide a valid MONGO_URI in .env or your deployment environment variables.');
+    process.exit(1);
+  }
+
   try {
-    console.log(`[SEED] Connecting to MongoDB at ${MONGO_URI}...`);
-    await mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 });
-    console.log('[SEED] Connected to MongoDB.');
 
     // 1. Clear all existing collections to ensure zero leftover mock/dummy data
     console.log('[SEED] Purging existing database collections...');
