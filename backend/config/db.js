@@ -10,7 +10,10 @@ dotenv.config();
  * If none is provided, it defaults to empty string so the server can run without crashing on Render.com
  * until you add your cloud database URI in the Render dashboard.
  */
-export const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL || process.env.MONGODB_URL || '';
+// MongoDB Atlas Cloud Connection String
+const ATLAS_FALLBACK_URI = 'mongodb+srv://mainaudy12_db_user:fONwulbjlyOq1W8k@vidya-vritti-databse.bjidi2m.mongodb.net/vidya-vrtti?retryWrites=true&w=majority&appName=vidya-vritti-databse';
+
+export const MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.MONGO_URL || process.env.MONGODB_URL || ATLAS_FALLBACK_URI;
 
 /**
  * Check if MongoDB is currently connected
