@@ -86,10 +86,10 @@ const CertificateUploadSlot: React.FC<CertificateUploadSlotProps> = ({
 
   return (
     <div className="p-4 rounded-xl bg-[#f1e0c5] border border-[#c9b79c] space-y-3">
-      {/* Real native hidden file input */}
+      {/* Real native hidden file input strictly restricted to PDF */}
       <input
         type="file"
-        accept="application/pdf"
+        accept=".pdf,application/pdf"
         hidden
         ref={fileInputRef}
         onChange={handleFileChange}
@@ -1068,7 +1068,10 @@ export const ApplyFormPage: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              {['ST Caste Certificate', 'Income Certificate', 'M.Sc Marksheet', 'Ph.D. Admission Letter'].map((docType) => {
+              {(scheme?.requiredDocs && scheme.requiredDocs.length > 0
+                ? scheme.requiredDocs
+                : ['ST Caste Certificate', 'Income Certificate', 'Post-Graduation Marksheet', 'Institute Admission Letter']
+              ).map((docType) => {
                 const existing = documents.find((d) => d.type === docType);
                 return (
                   <CertificateUploadSlot

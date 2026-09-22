@@ -252,6 +252,53 @@ export const mockApi = {
     });
   },
 
+  // Dedicated Document Verification Pipeline endpoint (POST /api/documents/verify)
+  async verifyDocument(
+    file: File,
+    userId: string,
+    docType: string,
+    compareName?: string
+  ): Promise<{
+    success: boolean;
+    message: string;
+    documentId: string;
+    document: Document;
+    extractedFields: {
+      fullName: string | null;
+      dateOfBirth: string | null;
+      casteCategory: string | null;
+      certificateNumber: string | null;
+      issuingAuthority: string | null;
+    };
+    confidenceScores: {
+      name: number;
+      overall: number;
+    };
+    matches: {
+      isMatch: boolean;
+      similarityScore: number;
+      providedName: string;
+      extractedName: string;
+      rationale: string;
+    };
+    ocrEngine: string;
+    pageCount: number;
+    ocrFields: OCRField[];
+  }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userId', userId);
+    formData.append('docType', docType);
+    if (compareName) {
+      formData.append('compareName', compareName);
+    }
+
+    return request('/documents/verify', {
+      method: 'POST',
+      body: formData
+    });
+  },
+
   // Document OCR simulation fallback (kept for compatibility)
   async runOCR(docType: string, fileName: string): Promise<OCRField[]> {
     return [

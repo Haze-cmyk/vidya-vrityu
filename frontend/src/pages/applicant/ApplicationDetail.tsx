@@ -370,7 +370,7 @@ export const ApplicationDetailPage: React.FC = () => {
       {/* Hidden PDF file input for document replacement in edit mode */}
       <input
         type="file"
-        accept="application/pdf"
+        accept=".pdf,application/pdf"
         hidden
         ref={replaceDocInputRef}
         onChange={handleDocumentFilePick}
@@ -1571,10 +1571,10 @@ export const ApplicationDetailPage: React.FC = () => {
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-bold text-slate-700">Upload Corrected Document (PDF)</label>
+              <label className="block text-xs font-bold text-slate-700">Upload Corrected Document (.PDF only)</label>
               <input
                 type="file"
-                accept="application/pdf"
+                accept=".pdf,application/pdf"
                 hidden
                 ref={deficiencyFileInputRef}
                 onChange={handleDeficiencyFileChange}
