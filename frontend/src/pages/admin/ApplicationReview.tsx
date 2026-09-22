@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { mockApi } from '../../lib/mockApi';
+import { mockApi, resolveDocumentUrl } from '../../lib/mockApi';
 import { Application, Document, OCRField } from '../../types';
 import { StatusBadge } from '../../components/shared/StatusBadge';
 import {
@@ -279,37 +279,60 @@ export const ApplicationReviewPage: React.FC = () => {
             )}
 
             {/* Document Preview Box */}
-            {activeDoc && (
-              <div className="border border-[#c9b79c] rounded-xl overflow-hidden bg-slate-100 h-[480px] flex flex-col relative">
-                <div className="bg-[#e8d6ba] px-4 py-2 flex items-center justify-between border-b border-[#c9b79c] text-xs">
-                  <span className="font-bold text-slate-800 font-mono truncate">{activeDoc.fileName} ({activeDoc.fileSize})</span>
-                  <a
-                    href={activeDoc.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center text-xs font-bold text-orange-600 hover:text-orange-700 bg-white px-2.5 py-1 rounded-md border border-slate-300 shadow-xs"
-                  >
-                    <Eye className="w-3.5 h-3.5 mr-1" />
-                    Open in Fullscreen
-                  </a>
+            {activeDoc && (() => {
+              const resolvedUrl = resolveDocumentUrl(activeDoc.url);
+              const isPdf = activeDoc.fileName?.toLowerCase().endsWith('.pdf') || activeDoc.url?.includes('/file');
+
+              return (
+                <div className="border border-[#c9b79c] rounded-xl overflow-hidden bg-slate-100 h-[480px] flex flex-col relative shadow-xs">
+                  <div className="bg-[#e8d6ba] px-4 py-2 flex items-center justify-between border-b border-[#c9b79c] text-xs">
+                    <span className="font-bold text-slate-800 font-mono truncate">{activeDoc.fileName} ({activeDoc.fileSize})</span>
+                    <a
+                      href={resolvedUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center text-xs font-bold text-orange-600 hover:text-orange-700 bg-white px-2.5 py-1 rounded-md border border-slate-300 shadow-xs cursor-pointer"
+                    >
+                      <Eye className="w-3.5 h-3.5 mr-1" />
+                      Open in Fullscreen
+                    </a>
+                  </div>
+                  <div className="flex-1 w-full h-full bg-slate-900 flex items-center justify-center overflow-hidden relative">
+                    {isPdf ? (
+                      <object
+                        data={`${resolvedUrl}#toolbar=1&navpanes=0`}
+                        type="application/pdf"
+                        className="w-full h-full"
+                      >
+                        {/* Fallback displayed ONLY if browser blocks embedded PDF or non-PDF response is served */}
+                        <div className="flex flex-col items-center justify-center h-full p-6 text-center text-slate-300 space-y-3">
+                          <FileText className="w-12 h-12 text-amber-400" />
+                          <p className="text-sm font-bold text-white">Document Preview: {activeDoc.fileName}</p>
+                          <p className="text-xs text-slate-400 max-w-sm">
+                            {activeDoc.fileSize} • {activeDoc.type}
+                          </p>
+                          <a
+                            href={resolvedUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-md transition-colors cursor-pointer"
+                          >
+                            <Eye className="w-4 h-4 mr-1.5" />
+                            <span>Open / Download PDF in Browser</span>
+                          </a>
+                        </div>
+                      </object>
+                    ) : (
+                      <img
+                        src={resolvedUrl}
+                        alt={activeDoc.fileName}
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    )}
+                  </div>
                 </div>
-                <div className="flex-1 w-full h-full bg-slate-800 flex items-center justify-center">
-                  {activeDoc.fileName?.toLowerCase().endsWith('.pdf') || activeDoc.url?.includes('/file') ? (
-                    <iframe
-                      src={activeDoc.url}
-                      title={activeDoc.fileName}
-                      className="w-full h-full border-0"
-                    />
-                  ) : (
-                    <img
-                      src={activeDoc.url}
-                      alt={activeDoc.fileName}
-                      className="max-h-full max-w-full object-contain"
-                    />
-                  )}
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </div>
       </div>

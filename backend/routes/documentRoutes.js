@@ -363,6 +363,10 @@ router.get('/:id/file', async (req, res) => {
       return res.status(404).json({ message: 'Document file not found' });
     }
 
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.removeHeader('X-Frame-Options');
+
     // Try reading from disk first
     if (doc.originalPdfPath && fs.existsSync(doc.originalPdfPath)) {
       res.setHeader('Content-Type', doc.mimeType || 'application/pdf');

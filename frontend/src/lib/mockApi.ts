@@ -20,6 +20,21 @@ function resolveBaseUrl(): string {
   return url.endsWith('/api') ? url : `${url}/api`;
 }
 
+export function resolveDocumentUrl(url?: string): string {
+  if (!url) return '';
+  if (
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('blob:') ||
+    url.startsWith('data:')
+  ) {
+    return url;
+  }
+  const base = resolveBaseUrl().replace(/\/api$/, '');
+  const cleanPath = url.startsWith('/') ? url : `/${url}`;
+  return base ? `${base}${cleanPath}` : cleanPath;
+}
+
 const BASE_URL = resolveBaseUrl();
 
 const CURRENT_USER_STORAGE_KEY = 'vidya_vrtti_current_user';
