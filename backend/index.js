@@ -26,6 +26,18 @@ app.use(cors());
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
+// Database readiness check: Fail fast with helpful message instead of 10s buffering timeout
+app.use('/api', (req, res, next) => {
+  if (req.path === '/health') return next();
+  if (!isDatabaseConnected()) {
+    return res.status(503).json({
+      success: false,
+      message: 'Database is not connected. Please verify MONGO_URI in your Railway/server environment variables.'
+    });
+  }
+  next();
+});
+
 // Mount API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/schemes', schemeRoutes);
