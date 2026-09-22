@@ -1,3 +1,13 @@
+import nodeCrypto from 'crypto';
+
+// Polyfill global crypto for MongoDB driver on cloud runtimes (Node 18/Railway Nixpacks)
+if (typeof globalThis.crypto === 'undefined') {
+  globalThis.crypto = nodeCrypto.webcrypto || nodeCrypto;
+}
+if (typeof global.crypto === 'undefined') {
+  global.crypto = nodeCrypto;
+}
+
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
