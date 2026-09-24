@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { mockApi } from '../../lib/mockApi';
 import { Application, Document, OCRField } from '../../types';
 import { StatusBadge } from '../../components/shared/StatusBadge';
@@ -36,6 +37,12 @@ import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 
 export const ApplicationDetailPage: React.FC = () => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   const { appId } = useParams<{ appId: string }>();
   const navigate = useNavigate();
 

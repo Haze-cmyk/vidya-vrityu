@@ -46,6 +46,35 @@
       <sub><a href="https://github.com/prashantmishra02006-source">@prashantmishra02006-source</a></sub>
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/sameer309346">
+        <img src="https://github.com/sameer309346.png" width="100" height="100" alt="Sameer Singh GitHub profile picture" />
+        <br />
+        <sub><b>Sameer Singh</b></sub>
+      </a>
+      <br />
+      <sub><a href="https://github.com/sameer309346">@sameer309346</a></sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/ronitpandey17200-ops">
+        <img src="https://github.com/ronitpandey17200-ops.png" width="100" height="100" alt="Ronit Pandey GitHub profile picture" />
+        <br />
+        <sub><b>Ronit Pandey</b></sub>
+      </a>
+      <br />
+      <sub><a href="mailto:ronitpandey17200@gmail.com">ronitpandey17200@gmail.com</a></sub>
+    </td>
+    <td align="center">
+      <a href="mailto:shre.more10@gmail.com">
+        <img src="https://ui-avatars.com/api/?name=Shre+More&background=71816d&color=fff&size=100" width="100" height="100" alt="Shre More profile picture" />
+        <br />
+        <sub><b>Shre More</b></sub>
+      </a>
+      <br />
+      <sub><a href="mailto:shre.more10@gmail.com">shre.more10@gmail.com</a></sub>
+    </td>
+  </tr>
 </table>
 
 ## About

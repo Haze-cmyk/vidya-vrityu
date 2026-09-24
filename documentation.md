@@ -918,6 +918,11 @@ Known prototype limitations include:
 
 ## 24. Contributors
 
-- Jayesh Thakur
-- Aryan Tripathi
+- Jayesh Thakur ([@Haze-cmyk](https://github.com/Haze-cmyk))
+- Aryan Tripathi ([@AryanTripathiJi](https://github.com/AryanTripathiJi))
+- Prashant Mishra ([@prashantmishra02006-source](https://github.com/prashantmishra02006-source))
+- Sameer Singh ([@sameer309346](https://github.com/sameer309346))
+- Ronit Pandey ([@ronitpandey17200-ops](https://github.com/ronitpandey17200-ops) / [ronitpandey17200@gmail.com](mailto:ronitpandey17200@gmail.com))
+- Shre More ([shre.more10@gmail.com](mailto:shre.more10@gmail.com))
+
 

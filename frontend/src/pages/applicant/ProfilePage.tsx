@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import {
   User as UserIcon,
@@ -29,6 +30,11 @@ const INDIAN_STATES = [
 
 export const ProfilePage: React.FC = () => {
   const { user, updateProfile } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   const [loading, setLoading] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

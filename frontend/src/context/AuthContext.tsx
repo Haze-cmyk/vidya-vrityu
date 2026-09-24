@@ -66,6 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setToken(null);
     localStorage.removeItem('vidya_vrtti_current_user');
+    localStorage.removeItem('vidya_vrtti_token');
   };
 
   const switchRole = (newRole: Role) => {

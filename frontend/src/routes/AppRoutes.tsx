@@ -1,6 +1,7 @@
 import React from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Role } from '../types';
 import { Navbar } from '../components/layout/Navbar';
 import { Sidebar } from '../components/layout/Sidebar';
 import { Footer } from '../components/layout/Footer';
@@ -35,6 +36,22 @@ import { SchemeConfigEnginePage } from '../pages/admin/SchemeConfigEngine';
 import { CommunicationsPage } from '../pages/admin/Communications';
 import { ReportsPage } from '../pages/admin/Reports';
 import { AuditLogPage } from '../pages/admin/AuditLog';
+
+// Protected Route Component: enforces authentication and optional role restrictions
+const ProtectedRoute: React.FC<{ allowedRoles?: Role[] }> = ({ allowedRoles }) => {
+  const { user, role } = useAuth();
+  const location = useLocation();
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(role)) {
+    return <Navigate to={role === 'applicant' ? '/app' : '/admin'} replace />;
+  }
+
+  return <Outlet />;
+};
 
 // Main Portal App Layout Wrapper with Navbar, Sidebar & Footer
 const PortalLayout: React.FC = () => {
@@ -93,29 +110,36 @@ export const AppRoutes: React.FC = () => {
 
       {/* Applicant Portal Routes */}
       <Route path="/app" element={<PortalLayout />}>
-        <Route index element={<ApplicantDashboard />} />
+        {/* Publicly browsable schemes inside portal, but all interactive user operations require login */}
         <Route path="schemes" element={<BrowseSchemes />} />
         <Route path="schemes/:schemeId" element={<SchemeDetailPage />} />
-        <Route path="apply/:schemeId" element={<ApplyFormPage />} />
-        <Route path="applications" element={<MyApplicationsPage />} />
-        <Route path="applications/:appId" element={<ApplicationDetailPage />} />
-        <Route path="profile" element={<ProfilePage />} />
         <Route path="help" element={<HelpPage />} />
+
+        {/* Protected Applicant Routes: Unauthenticated users are redirected to /login */}
+        <Route element={<ProtectedRoute allowedRoles={['applicant']} />}>
+          <Route index element={<ApplicantDashboard />} />
+          <Route path="apply/:schemeId" element={<ApplyFormPage />} />
+          <Route path="applications" element={<MyApplicationsPage />} />
+          <Route path="applications/:appId" element={<ApplicationDetailPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
       </Route>
 
-      {/* Admin / Officers Portal Routes */}
-      <Route path="/admin" element={<PortalLayout />}>
-        <Route index element={<AdminDashboard />} />
-        <Route path="applications" element={<ApplicationsListPage />} />
-        <Route path="applications/:appId/review" element={<ApplicationReviewPage />} />
-        <Route path="verification" element={<VerificationQueuePage />} />
-        <Route path="scrutiny" element={<ScrutinyWorkflowPage />} />
-        <Route path="selection" element={<MeritListEnginePage />} />
-        <Route path="schemes/configure" element={<SchemeConfigEnginePage />} />
-        <Route path="communications" element={<CommunicationsPage />} />
-        <Route path="reports" element={<ReportsPage />} />
-        <Route path="audit" element={<AuditLogPage />} />
-        <Route path="help" element={<HelpPage />} />
+      {/* Admin / Officers Portal Routes: Strictly Protected */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'officer', 'committee', 'institute']} />}>
+        <Route path="/admin" element={<PortalLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="applications" element={<ApplicationsListPage />} />
+          <Route path="applications/:appId/review" element={<ApplicationReviewPage />} />
+          <Route path="verification" element={<VerificationQueuePage />} />
+          <Route path="scrutiny" element={<ScrutinyWorkflowPage />} />
+          <Route path="selection" element={<MeritListEnginePage />} />
+          <Route path="schemes/configure" element={<SchemeConfigEnginePage />} />
+          <Route path="communications" element={<CommunicationsPage />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="audit" element={<AuditLogPage />} />
+          <Route path="help" element={<HelpPage />} />
+        </Route>
       </Route>
 
       {/* Fallback */}

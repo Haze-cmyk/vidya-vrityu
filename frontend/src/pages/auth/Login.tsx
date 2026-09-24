@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Lock, ArrowRight, User, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
@@ -10,6 +10,7 @@ export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +22,10 @@ export const LoginPage: React.FC = () => {
     try {
       const user = await login(identifier.trim());
       toast.success(`Welcome back, ${user.name || 'User'}!`);
-      if (user.role === 'applicant') {
+      const fromPath = (location.state as any)?.from?.pathname;
+      if (fromPath) {
+        navigate(fromPath, { replace: true });
+      } else if (user.role === 'applicant') {
         navigate('/app');
       } else {
         navigate('/admin');

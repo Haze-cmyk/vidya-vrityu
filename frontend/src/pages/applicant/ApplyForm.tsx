@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Navigate, useLocation } from 'react-router-dom';
 import { mockApi } from '../../lib/mockApi';
 import { useAuth } from '../../context/AuthContext';
 import { Scheme, OCRField, Document, PersonalDetails } from '../../types';
@@ -196,6 +196,11 @@ export const ApplyFormPage: React.FC = () => {
   const editAppId = searchParams.get('editAppId');
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   const [scheme, setScheme] = useState<Scheme | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [maxStepReached, setMaxStepReached] = useState(1);
@@ -556,7 +561,7 @@ export const ApplyFormPage: React.FC = () => {
       }
 
       const newApp = await mockApi.submitApplication({
-        applicantId: user?.id || 'usr-student-1',
+        applicantId: user.id,
         schemeId: scheme?.id || 'scheme-nfst',
         schemeCode: scheme?.code || 'NFST',
         schemeName: scheme?.name || 'National Fellowship for ST Students',

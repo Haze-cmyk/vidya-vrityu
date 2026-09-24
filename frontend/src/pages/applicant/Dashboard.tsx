@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { mockApi } from '../../lib/mockApi';
 import { Application } from '../../types';
@@ -22,6 +22,11 @@ import { draftManager, ApplicationDraft, STEP_NAMES } from '../../lib/draftManag
 
 export const ApplicantDashboard: React.FC = () => {
   const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   const [applications, setApplications] = useState<Application[]>([]);
   const [drafts, setDrafts] = useState<ApplicationDraft[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,8 +48,9 @@ export const ApplicantDashboard: React.FC = () => {
   }, [user?.id]);
 
   const loadMyApplications = async () => {
+    if (!user) return;
     setLoading(true);
-    const apps = await mockApi.getApplications({ applicantId: user?.id || 'usr-student-1' });
+    const apps = await mockApi.getApplications({ applicantId: user.id });
     setApplications(apps);
     setLoading(false);
   };

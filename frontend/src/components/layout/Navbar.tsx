@@ -22,6 +22,7 @@ import {
   HelpCircle,
   LogIn
 } from 'lucide-react';
+import { LanguageSelector } from '../shared/LanguageSelector';
 
 export const Navbar: React.FC = () => {
   const { user, role, switchRole, logout, notifications, unreadCount, markNotificationAsRead } = useAuth();
@@ -124,11 +125,13 @@ export const Navbar: React.FC = () => {
           <span className="hidden md:inline text-slate-500">|</span>
           <span className="hidden sm:inline text-amber-300 font-semibold">Direct Benefit Transfer (DBT)</span>
         </div>
-        <div className="flex items-center space-x-3 text-[10px] sm:text-xs">
+        <div className="flex items-center space-x-2 sm:space-x-3 text-[10px] sm:text-xs">
+          <LanguageSelector variant="navbar-top" />
+          <span className="text-slate-500">|</span>
           <Link to="/help" className="hover:text-amber-300 transition-colors">
             Help & Guidelines
           </Link>
-          <span>|</span>
+          <span className="text-slate-500">|</span>
           <span className="text-slate-300">SIH 2026</span>
         </div>
       </div>
@@ -341,6 +344,11 @@ export const Navbar: React.FC = () => {
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-[#4e5a4b] border-t border-navy-700 shadow-xl px-4 py-4 space-y-4 max-h-[80vh] overflow-y-auto">
+          {/* Mobile Language Selector */}
+          <div className="pb-1 border-b border-[#62715e]">
+            <LanguageSelector variant="mobile-drawer" />
+          </div>
+
           {/* If user logged in, show user info card */}
           {user && (
             <div className="p-3 bg-[#5a6857] rounded-xl border border-navy-600 flex items-center justify-between">
@@ -432,6 +440,29 @@ export const Navbar: React.FC = () => {
                   </Link>
                 </>
               )}
+            </div>
+          )}
+
+          {/* Quick Portal Access if user is logged out */}
+          {!user && (
+            <div className="space-y-1 pt-1 border-b border-[#62715e] pb-3">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-300 px-1 mb-1">
+                Portal Workspace
+              </p>
+              <Link
+                to="/login"
+                state={{ from: { pathname: '/app' } }}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-slate-200 hover:bg-[#5a6857] hover:text-white transition-colors"
+              >
+                <div className="flex items-center space-x-2.5">
+                  <LayoutDashboard className="w-4 h-4 text-amber-300" />
+                  <span>Portal Dashboard</span>
+                </div>
+                <span className="text-[10px] bg-amber-500 text-slate-900 font-bold px-2 py-0.5 rounded-md">
+                  Sign In
+                </span>
+              </Link>
             </div>
           )}
 

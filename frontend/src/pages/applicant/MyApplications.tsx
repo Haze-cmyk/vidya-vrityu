@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { mockApi } from '../../lib/mockApi';
 import { Application } from '../../types';
@@ -18,6 +18,11 @@ import { draftManager, ApplicationDraft, STEP_NAMES } from '../../lib/draftManag
 
 export const MyApplicationsPage: React.FC = () => {
   const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   const navigate = useNavigate();
   const [applications, setApplications] = useState<Application[]>([]);
   const [drafts, setDrafts] = useState<ApplicationDraft[]>([]);
@@ -27,7 +32,8 @@ export const MyApplicationsPage: React.FC = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const loadDrafts = () => {
-    setDrafts(draftManager.getAllDrafts(user?.id));
+    if (!user) return;
+    setDrafts(draftManager.getAllDrafts(user.id));
   };
 
   useEffect(() => {
@@ -37,7 +43,8 @@ export const MyApplicationsPage: React.FC = () => {
   }, [user?.id]);
 
   useEffect(() => {
-    mockApi.getApplications({ applicantId: user?.id || 'usr-student-1' }).then((data) => {
+    if (!user) return;
+    mockApi.getApplications({ applicantId: user.id }).then((data) => {
       setApplications(data);
       setLoading(false);
     });

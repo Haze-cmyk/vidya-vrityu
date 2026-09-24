@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { mockApi } from '../../lib/mockApi';
 import { AdminStats, Application } from '../../types';
 import { DashboardCard } from '../../components/shared/DashboardCard';
@@ -35,6 +36,12 @@ import {
 } from 'recharts';
 
 export const AdminDashboard: React.FC = () => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [recentApps, setRecentApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
