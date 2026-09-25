@@ -1,4 +1,4 @@
-# Vidya-Vrityu
+# Vidya-Vritti
 
 ### Unified Scholarship Management Portal
 
